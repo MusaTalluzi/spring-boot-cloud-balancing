@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package org.optaplanner.springbootcloudbalancing;
+package org.optaplanner.springbootcloudbalancing.solver;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.optaplanner.core.api.score.Score;
 
-@SpringBootApplication
-public class SpringBootCloudBalancingApplication {
+public interface CloudBalancingSolverManager<Solution_> {
 
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootCloudBalancingApplication.class, args);
-    }
+    void startSolver(Solution_ planningSolution);
+
+    Solution_ getBestSolution();
+
+    Score getBestScore();
+
+    SolverStatus getSolverStatus();
 }

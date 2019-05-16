@@ -14,15 +14,34 @@
  * limitations under the License.
  */
 
-package org.optaplanner.springbootcloudbalancing;
+package org.optaplanner.springbootcloudbalancing.domain;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.io.Serializable;
 
-@SpringBootApplication
-public class SpringBootCloudBalancingApplication {
+import org.optaplanner.core.api.domain.lookup.PlanningId;
 
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootCloudBalancingApplication.class, args);
+public abstract class AbstractPersistable implements Serializable {
+
+    protected Long id;
+
+    protected AbstractPersistable() {
+    }
+
+    protected AbstractPersistable(long id) {
+        this.id = id;
+    }
+
+    @PlanningId
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getName().replaceAll(".*\\.", "") + "-" + id;
     }
 }
