@@ -22,33 +22,36 @@ import org.optaplanner.springbootcloudbalancing.solver.CloudBalancingSolverManag
 import org.optaplanner.springbootcloudbalancing.solver.SolverStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("solvers")
 public class CloudBalancingController {
 
     @Autowired
-    private CloudBalancingSolverManager<CloudBalance> cloudBalanceCloudBalancingSolverManager;
+    private CloudBalancingSolverManager<CloudBalance> cloudBalancingSolverManager;
 
     @PostMapping
-    public void startSolver(@RequestBody CloudBalance cloudBalance) {
-        cloudBalanceCloudBalancingSolverManager.startSolver(cloudBalance);
+    public Long solve(@RequestBody CloudBalance cloudBalance) {
+        return cloudBalancingSolverManager.solve(cloudBalance);
     }
 
-    @GetMapping("/bestSolution")
-    public CloudBalance bestSolution() {
-        return cloudBalanceCloudBalancingSolverManager.getBestSolution();
+    @GetMapping("{solverId}/bestSolution")
+    public CloudBalance bestSolution(@PathVariable Long solverId) {
+        return cloudBalancingSolverManager.getBestSolution(solverId);
     }
 
-    @GetMapping("/bestScore")
-    public Score bestScore() {
-        return cloudBalanceCloudBalancingSolverManager.getBestScore();
+    @GetMapping("{solverId}/bestScore")
+    public Score bestScore(@PathVariable Long solverId) {
+        return cloudBalancingSolverManager.getBestScore(solverId);
     }
 
-    @GetMapping("/solverStatus")
-    public SolverStatus solverStatus() {
-        return cloudBalanceCloudBalancingSolverManager.getSolverStatus();
+    @GetMapping("{solverId}/solverStatus")
+    public SolverStatus solverStatus(@PathVariable Long solverId) {
+        return cloudBalancingSolverManager.getSolverStatus(solverId);
     }
 }
