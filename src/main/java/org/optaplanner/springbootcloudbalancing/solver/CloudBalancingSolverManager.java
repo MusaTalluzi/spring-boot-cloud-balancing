@@ -20,11 +20,11 @@ import org.optaplanner.core.api.score.Score;
 
 public interface CloudBalancingSolverManager<Solution_> {
 
-    void startSolver(Solution_ planningSolution);
+    Long solve(Solution_ planningSolution);
 
-    Solution_ getBestSolution();
+    Solution_ getBestSolution(Long solverId);
 
-    Score getBestScore();
+    Score getBestScore(Long solverId);
 
-    SolverStatus getSolverStatus();
+    SolverStatus getSolverStatus(Long solverId);
 }

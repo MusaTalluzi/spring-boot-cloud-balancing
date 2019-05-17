@@ -16,65 +16,77 @@
 
 package org.optaplanner.springbootcloudbalancing.solver;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.optaplanner.core.api.score.Score;
-import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.core.api.solver.SolverFactory;
 import org.optaplanner.springbootcloudbalancing.domain.CloudBalance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CloudBalancingSolverManagerImpl implements CloudBalancingSolverManager<CloudBalance> {
 
+    private static final Logger logger = LoggerFactory.getLogger(CloudBalancingSolverManagerImpl.class);
+
     private static final String SOLVER_CONFIG = "org/optaplanner/springbootcloudbalancing/solver/cloudBalancingSolverConfig.xml";
 
     private ExecutorService executorService;
     private SolverFactory<CloudBalance> solverFactory;
-    private Solver<CloudBalance> solver;
+    private Map<Long, SolverTask> solverTaskIdToSolverTaskMap;
+    private AtomicLong newSolverId = new AtomicLong(0);
 
     public CloudBalancingSolverManagerImpl() {
         solverFactory = SolverFactory.createFromXmlResource(SOLVER_CONFIG, CloudBalancingSolverManagerImpl.class.getClassLoader());
+        solverTaskIdToSolverTaskMap = new HashMap<>();
     }
 
     @PostConstruct
     private void init() {
-        executorService = Executors.newFixedThreadPool(1);
-        solver = solverFactory.buildSolver();
+        int numAvailableProcessors = Runtime.getRuntime().availableProcessors();
+        logger.info("Number of available processors: {}.", numAvailableProcessors);
+        executorService = Executors.newFixedThreadPool(numAvailableProcessors);
     }
 
     @PreDestroy
     private void shutdown() {
+        logger.info("Shutting down {}.", CloudBalancingSolverManagerImpl.class.getName());
         executorService.shutdownNow();
     }
 
     @Override
-    public void startSolver(CloudBalance cloudBalance) {
-        executorService.submit(() -> solver.solve(cloudBalance));
+    public Long solve(CloudBalance cloudBalance) {
+        Long id = newSolverId.getAndIncrement();
+        SolverTask newSolverTask = new SolverTask(id, solverFactory.buildSolver(), cloudBalance);
+        executorService.submit(newSolverTask);
+        solverTaskIdToSolverTaskMap.put(id, newSolverTask);
+        logger.info("A new solver task was created with id {}.", id);
+        return id;
     }
 
     @Override
-    public CloudBalance getBestSolution() {
-        return solver.getBestSolution();
+    public CloudBalance getBestSolution(Long solverId) {
+        logger.info("Getting best solution of solver {}.", solverId);
+        return solverTaskIdToSolverTaskMap.get(solverId).getBestSolution();
     }
 
     @Override
-    public Score getBestScore() {
-        return solver.getBestScore();
+    public Score getBestScore(Long solverId) {
+        logger.info("Getting best score of solver {}.", solverId);
+        return solverTaskIdToSolverTaskMap.get(solverId).getBestScore();
     }
 
     @Override
-    public SolverStatus getSolverStatus() {
-        if (solver.isTerminateEarly()) {
-            return SolverStatus.TERMINATING_EARLY;
-        } else if (solver.isSolving()) {
-            return SolverStatus.SOLVING;
-        } else {
-            return SolverStatus.STOPPED;
-        }
+    public SolverStatus getSolverStatus(Long solverId) {
+        logger.info("Getting solver status of solver {}.", solverId);
+        return solverTaskIdToSolverTaskMap.get(solverId).getSolverStatus();
     }
 }
