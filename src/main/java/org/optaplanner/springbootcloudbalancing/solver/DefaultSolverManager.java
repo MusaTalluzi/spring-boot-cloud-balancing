@@ -26,21 +26,20 @@ import javax.annotation.PreDestroy;
 
 import org.optaplanner.core.api.score.Score;
 import org.optaplanner.core.api.solver.SolverFactory;
-import org.optaplanner.springbootcloudbalancing.domain.CloudBalance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DefaultSolverManager implements SolverManager<CloudBalance> {
+public class DefaultSolverManager<Solution_> implements SolverManager<Solution_> {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultSolverManager.class);
 
     private static final String SOLVER_CONFIG = "org/optaplanner/springbootcloudbalancing/solver/cloudBalancingSolverConfig.xml";
 
     private ExecutorService executorService;
-    private SolverFactory<CloudBalance> solverFactory;
-    private Map<String, SolverTask<CloudBalance>> tenantIdToSolverTaskMap;
+    private SolverFactory<Solution_> solverFactory;
+    private Map<String, SolverTask<Solution_>> tenantIdToSolverTaskMap;
 
     public DefaultSolverManager() {
         solverFactory = SolverFactory.createFromXmlResource(SOLVER_CONFIG, DefaultSolverManager.class.getClassLoader());
@@ -61,12 +60,12 @@ public class DefaultSolverManager implements SolverManager<CloudBalance> {
     }
 
     @Override
-    public void solve(String tenantId, CloudBalance cloudBalance) {
+    public void solve(String tenantId, Solution_ planningProblem) {
         synchronized (this) {
             if (tenantIdToSolverTaskMap.containsKey(tenantId)) {
                 throw new IllegalArgumentException("Tenant id (" + tenantId + ") already exists.");
             }
-            SolverTask<CloudBalance> newSolverTask = new SolverTask<>(tenantId, solverFactory.buildSolver(), cloudBalance);
+            SolverTask<Solution_> newSolverTask = new SolverTask<>(tenantId, solverFactory.buildSolver(), planningProblem);
             executorService.submit(newSolverTask);
             tenantIdToSolverTaskMap.put(tenantId, newSolverTask);
             logger.info("A new solver task was created with tenantId {}.", tenantId);
@@ -74,7 +73,7 @@ public class DefaultSolverManager implements SolverManager<CloudBalance> {
     }
 
     @Override
-    public CloudBalance getBestSolution(String tenantId) {
+    public Solution_ getBestSolution(String tenantId) {
         logger.info("Getting best solution of tenantId {}.", tenantId);
         return tenantIdToSolverTaskMap.get(tenantId).getBestSolution();
     }
