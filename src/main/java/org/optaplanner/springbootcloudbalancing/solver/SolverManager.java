@@ -18,13 +18,13 @@ package org.optaplanner.springbootcloudbalancing.solver;
 
 import org.optaplanner.core.api.score.Score;
 
-public interface CloudBalancingSolverManager<Solution_> {
+public interface SolverManager<Solution_> {
 
-    Long solve(Solution_ planningSolution);
+    void solve(String tenantId, Solution_ planningSolution);
 
-    Solution_ getBestSolution(Long solverId);
+    Solution_ getBestSolution(String tenantId);
 
-    Score getBestScore(Long solverId);
+    Score getBestScore(String tenantId);
 
-    SolverStatus getSolverStatus(Long solverId);
+    SolverStatus getSolverStatus(String tenantId);
 }

@@ -25,24 +25,24 @@ public class SolverTask<Solution_> implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(SolverTask.class);
 
-    private final Long id;
+    private final String tenantId;
     private Solver<Solution_> solver;
     private Solution_ planningProblem;
 
-    public SolverTask(Long id, Solver<Solution_> solver, Solution_ planningProblem) {
-        this.id = id;
+    public SolverTask(String teantId, Solver<Solution_> solver, Solution_ planningProblem) {
+        this.tenantId = teantId;
         this.solver = solver;
         this.planningProblem = planningProblem;
     }
 
     @Override
     public void run() {
-        logger.info("Running solverTask with id {}.", id);
+        logger.info("Running solverTask for tenantId {}.", tenantId);
         solver.solve(planningProblem);
     }
 
-    public Long getId() {
-        return id;
+    public String getTenantId() {
+        return tenantId;
     }
 
     public Solution_ getBestSolution() {

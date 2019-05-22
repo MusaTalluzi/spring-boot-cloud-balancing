@@ -18,7 +18,7 @@ package org.optaplanner.springbootcloudbalancing;
 
 import org.optaplanner.core.api.score.Score;
 import org.optaplanner.springbootcloudbalancing.domain.CloudBalance;
-import org.optaplanner.springbootcloudbalancing.solver.CloudBalancingSolverManager;
+import org.optaplanner.springbootcloudbalancing.solver.SolverManager;
 import org.optaplanner.springbootcloudbalancing.solver.SolverStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,25 +33,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class CloudBalancingController {
 
     @Autowired
-    private CloudBalancingSolverManager<CloudBalance> cloudBalancingSolverManager;
+    private SolverManager<CloudBalance> solverManager;
 
-    @PostMapping
-    public Long solve(@RequestBody CloudBalance cloudBalance) {
-        return cloudBalancingSolverManager.solve(cloudBalance);
+    @PostMapping("{tenantId}")
+    public void solve(@PathVariable String tenantId, @RequestBody CloudBalance cloudBalance) {
+        solverManager.solve(tenantId, cloudBalance);
     }
 
-    @GetMapping("{solverId}/bestSolution")
-    public CloudBalance bestSolution(@PathVariable Long solverId) {
-        return cloudBalancingSolverManager.getBestSolution(solverId);
+    @GetMapping("{tenantId}/bestSolution")
+    public CloudBalance bestSolution(@PathVariable String tenantId) {
+        return solverManager.getBestSolution(tenantId);
     }
 
-    @GetMapping("{solverId}/bestScore")
-    public Score bestScore(@PathVariable Long solverId) {
-        return cloudBalancingSolverManager.getBestScore(solverId);
+    @GetMapping("{tenantId}/bestScore")
+    public Score bestScore(@PathVariable String tenantId) {
+        return solverManager.getBestScore(tenantId);
     }
 
-    @GetMapping("{solverId}/solverStatus")
-    public SolverStatus solverStatus(@PathVariable Long solverId) {
-        return cloudBalancingSolverManager.getSolverStatus(solverId);
+    @GetMapping("{tenantId}/solverStatus")
+    public SolverStatus solverStatus(@PathVariable String tenantId) {
+        return solverManager.getSolverStatus(tenantId);
     }
 }
