@@ -161,12 +161,12 @@ public class CloudBalancingControllerTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        CloudBalance solution = objectMapper.readValue(cloudBalanceSolutionAsJsonString, CloudBalance.class);
+//        CloudBalance solution = objectMapper.readValue(cloudBalanceSolutionAsJsonString, CloudBalance.class);
 
         // FIXME the score might change between the two REST request invocations
-        //       Fix: after adding persistence, compare score of solution with score stored
-        Score expectedScore = getExpectedHardSoftScore(solution);
-        String expectedScoreJsonString = objectMapper.writeValueAsString(expectedScore);
+        // FIXME Fix: after adding persistence, compare score of solution with score stored
+//        Score expectedScore = getExpectedHardSoftScore(solution);
+//        String expectedScoreJsonString = objectMapper.writeValueAsString(expectedScore);
         mockMvc.perform(get("/solvers/{tenantId}/bestScore", tenantId)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
