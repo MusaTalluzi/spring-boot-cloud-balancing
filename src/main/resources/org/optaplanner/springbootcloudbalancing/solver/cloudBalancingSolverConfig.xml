@@ -32,7 +32,10 @@
 
   <!-- Optimization algorithms configuration -->
   <termination>
-    <minutesSpentLimit>2</minutesSpentLimit>
+    <!-- Temporary short terminating limit to keep tests fast
+        TODO change to 2m after implementing persistence and bestSolutionChangedEvent
+     -->
+    <secondsSpentLimit>2</secondsSpentLimit>
   </termination>
 
 </solver>
