@@ -41,7 +41,7 @@ public class CloudBalancingSolverManagerImpl implements CloudBalancingSolverMana
 
     private ExecutorService executorService;
     private SolverFactory<CloudBalance> solverFactory;
-    private Map<Long, SolverTask> solverTaskIdToSolverTaskMap;
+    private Map<Long, SolverTask<CloudBalance>> solverTaskIdToSolverTaskMap;
     private AtomicLong newSolverId = new AtomicLong(0);
 
     public CloudBalancingSolverManagerImpl() {
@@ -53,7 +53,7 @@ public class CloudBalancingSolverManagerImpl implements CloudBalancingSolverMana
     private void init() {
         int numAvailableProcessors = Runtime.getRuntime().availableProcessors();
         logger.info("Number of available processors: {}.", numAvailableProcessors);
-        executorService = Executors.newFixedThreadPool(numAvailableProcessors);
+        executorService = Executors.newFixedThreadPool(numAvailableProcessors * 10);
     }
 
     @PreDestroy
@@ -65,7 +65,7 @@ public class CloudBalancingSolverManagerImpl implements CloudBalancingSolverMana
     @Override
     public Long solve(CloudBalance cloudBalance) {
         Long id = newSolverId.getAndIncrement();
-        SolverTask newSolverTask = new SolverTask(id, solverFactory.buildSolver(), cloudBalance);
+        SolverTask<CloudBalance> newSolverTask = new SolverTask<>(id, solverFactory.buildSolver(), cloudBalance);
         executorService.submit(newSolverTask);
         solverTaskIdToSolverTaskMap.put(id, newSolverTask);
         logger.info("A new solver task was created with id {}.", id);

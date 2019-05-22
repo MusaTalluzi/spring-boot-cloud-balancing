@@ -18,19 +18,18 @@ package org.optaplanner.springbootcloudbalancing.solver;
 
 import org.optaplanner.core.api.score.Score;
 import org.optaplanner.core.api.solver.Solver;
-import org.optaplanner.springbootcloudbalancing.domain.CloudBalance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SolverTask implements Runnable {
+public class SolverTask<Solution_> implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(SolverTask.class);
 
     private final Long id;
-    private Solver<CloudBalance> solver;
-    private CloudBalance planningProblem;
+    private Solver<Solution_> solver;
+    private Solution_ planningProblem;
 
-    public SolverTask(Long id, Solver<CloudBalance> solver, CloudBalance planningProblem) {
+    public SolverTask(Long id, Solver<Solution_> solver, Solution_ planningProblem) {
         this.id = id;
         this.solver = solver;
         this.planningProblem = planningProblem;
@@ -46,7 +45,7 @@ public class SolverTask implements Runnable {
         return id;
     }
 
-    public CloudBalance getBestSolution() {
+    public Solution_ getBestSolution() {
         return solver.getBestSolution();
     }
 
