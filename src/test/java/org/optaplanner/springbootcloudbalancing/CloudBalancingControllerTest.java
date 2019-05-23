@@ -138,7 +138,7 @@ public class CloudBalancingControllerTest {
     private void submitOneProblemAndSolveIt(int computerListSize, int processListSize) throws Exception {
         CloudBalance cloudBalance = generateCloudBalancingProblem(computerListSize, processListSize);
         String cloudBalanceBody = objectMapper.writeValueAsString(cloudBalance);
-        String tenantId = cloudBalance.getId().toString();
+        Long tenantId = cloudBalance.getId();
         mockMvc.perform(MockMvcRequestBuilders.post("/solvers/{tenantId}", tenantId)
                 .content(cloudBalanceBody).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

@@ -39,7 +39,7 @@ public class DefaultSolverManager<Solution_> implements SolverManager<Solution_>
 
     private ExecutorService executorService;
     private SolverFactory<Solution_> solverFactory;
-    private Map<String, SolverTask<Solution_>> tenantIdToSolverTaskMap;
+    private Map<Comparable<?>, SolverTask<Solution_>> tenantIdToSolverTaskMap;
 
     public DefaultSolverManager() {
         solverFactory = SolverFactory.createFromXmlResource(SOLVER_CONFIG, DefaultSolverManager.class.getClassLoader());
@@ -60,7 +60,7 @@ public class DefaultSolverManager<Solution_> implements SolverManager<Solution_>
     }
 
     @Override
-    public void solve(String tenantId, Solution_ planningProblem) {
+    public void solve(Comparable<?> tenantId, Solution_ planningProblem) {
         synchronized (this) {
             if (tenantIdToSolverTaskMap.containsKey(tenantId)) {
                 throw new IllegalArgumentException("Tenant id (" + tenantId + ") already exists.");
@@ -68,25 +68,25 @@ public class DefaultSolverManager<Solution_> implements SolverManager<Solution_>
             SolverTask<Solution_> newSolverTask = new SolverTask<>(tenantId, solverFactory.buildSolver(), planningProblem);
             executorService.submit(newSolverTask);
             tenantIdToSolverTaskMap.put(tenantId, newSolverTask);
-            logger.info("A new solver task was created with tenantId {}.", tenantId);
+            logger.info("A new solver task was created with tenantId ({}).", tenantId);
         }
     }
 
     @Override
-    public Solution_ getBestSolution(String tenantId) {
-        logger.info("Getting best solution of tenantId {}.", tenantId);
+    public Solution_ getBestSolution(Comparable<?> tenantId) {
+        logger.debug("Getting best solution of tenantId ({}).", tenantId);
         return tenantIdToSolverTaskMap.get(tenantId).getBestSolution();
     }
 
     @Override
-    public Score getBestScore(String tenantId) {
-        logger.info("Getting best score of tenantId {}.", tenantId);
+    public Score getBestScore(Comparable<?> tenantId) {
+        logger.debug("Getting best score of tenantId ({}).", tenantId);
         return tenantIdToSolverTaskMap.get(tenantId).getBestScore();
     }
 
     @Override
-    public SolverStatus getSolverStatus(String tenantId) {
-        logger.info("Getting solver status of tenantId {}.", tenantId);
+    public SolverStatus getSolverStatus(Comparable<?> tenantId) {
+        logger.debug("Getting solver status of tenantId ({}).", tenantId);
         return tenantIdToSolverTaskMap.get(tenantId).getSolverStatus();
     }
 }
