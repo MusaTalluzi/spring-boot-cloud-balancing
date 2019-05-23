@@ -36,22 +36,22 @@ public class CloudBalancingController {
     private SolverManager<CloudBalance> solverManager;
 
     @PostMapping("{tenantId}")
-    public void solve(@PathVariable String tenantId, @RequestBody CloudBalance cloudBalance) {
+    public void solve(@PathVariable Comparable<?> tenantId, @RequestBody CloudBalance cloudBalance) {
         solverManager.solve(tenantId, cloudBalance);
     }
 
     @GetMapping("{tenantId}/bestSolution")
-    public CloudBalance bestSolution(@PathVariable String tenantId) {
+    public CloudBalance bestSolution(@PathVariable Comparable<?> tenantId) {
         return solverManager.getBestSolution(tenantId);
     }
 
     @GetMapping("{tenantId}/bestScore")
-    public Score bestScore(@PathVariable String tenantId) {
+    public Score bestScore(@PathVariable Comparable<?> tenantId) {
         return solverManager.getBestScore(tenantId);
     }
 
     @GetMapping("{tenantId}/solverStatus")
-    public SolverStatus solverStatus(@PathVariable String tenantId) {
+    public SolverStatus solverStatus(@PathVariable Comparable<?> tenantId) {
         return solverManager.getSolverStatus(tenantId);
     }
 }

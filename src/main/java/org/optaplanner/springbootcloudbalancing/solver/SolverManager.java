@@ -20,11 +20,11 @@ import org.optaplanner.core.api.score.Score;
 
 public interface SolverManager<Solution_> {
 
-    void solve(String tenantId, Solution_ planningSolution);
+    void solve(Comparable<?> tenantId, Solution_ planningSolution);
 
-    Solution_ getBestSolution(String tenantId);
+    Solution_ getBestSolution(Comparable<?> tenantId);
 
-    Score getBestScore(String tenantId);
+    Score getBestScore(Comparable<?> tenantId);
 
-    SolverStatus getSolverStatus(String tenantId);
+    SolverStatus getSolverStatus(Comparable<?> tenantId);
 }
